@@ -1,0 +1,39 @@
+.note {
+    width: 400px;
+    height: 200px;
+    position: absolute;
+    z-index: 1;
+}
+
+.note.unsaved textarea {
+    color: #888888;
+}
+
+.note_handle {
+    z-index: 2;
+}
+
+.note_handle_left {
+}
+
+.note_handle_right {
+    float:right;
+}
+
+.note_handle_right a {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.note textarea {
+    /*height: 140px;
+    width: 394px;*/
+    height: 70%;
+    width: 98%;
+}
+
+#desktop {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+  <head>
+    <title>Notepad</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/reset/reset-min.css" />
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.6.0/build/base/base-min.css" />
+    <link rel="stylesheet" href="/stylesheets/master.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="/stylesheets/jquery-ui-themeroller.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="/stylesheets/main.css" type="text/css" media="screen" charset="utf-8" />
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("jquery", "1");
+    </script>
+    <script type="text/javascript" src="/javascripts/jquery.dimensions.min.js"></script>
+    <script type="text/javascript" src="/javascripts/jquery-ui-personalized-1.6rc2.min.js"></script>
+    <script type="text/javascript" src="/javascripts/main.js"></script>
+    
+  <script type="text/javascript">
+    if (!window.console || !console.firebug)
+    {
+        var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+        "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    
+        window.console = {};
+        for (var i = 0; i < names.length; ++i)
+            window.console[names[i]] = function() {}
+    }
+  </script>
+
+  </head>
+  <body>
+    <%#= message[:notice] %>
+    <%= catch_content :for_layout %>
+  </body>
+</html>
