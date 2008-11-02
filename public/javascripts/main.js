@@ -75,5 +75,6 @@ $(function(){
 
         note.resizable({handles: 'all', alsoResize: textarea});
         note.draggable({handle: handle});
+        $("#click_to_start:visible").fadeOut("normal");
     });
 });

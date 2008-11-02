@@ -26,8 +26,8 @@ class Notes < Application
   end
 
   def create(note)
-    unless current_user.nil?
-      note[:user_id] = current_user.id
+    unless session.user.nil?
+      note[:user_id] = session.user.id
     end
     if note[:user_id].nil? || note[:user_id] == ''
       if cookies[:user_id].nil? || cookies[:user_id] == ''
@@ -40,6 +40,7 @@ class Notes < Application
     
     @note = Note.new(note)
     if @note.save
+      @status = 'success'
       case content_type
         when :html
           redirect resource(@note), :message => {:notice => "Note was successfully created"}

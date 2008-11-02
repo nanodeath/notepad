@@ -22,12 +22,8 @@ class User
   has n, :notes
   
   def User.create_anonymous_user
-    my_rand = rand(1000000).to_s
-    
-    
-    login = 'User' + my_rand
-    
-    password = Digest::SHA1.hexdigest('password' + my_rand)
+    login = 'User' + rand(1000000).to_s
+    password = Digest::SHA1.hexdigest('password' + rand(1000000).to_s)
     User.create(:login => login, :password => password, :is_anonymous => true)
   end
 end
