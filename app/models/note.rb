@@ -6,6 +6,8 @@ class Note
   property :body, Text
   property :position_x, Integer
   property :position_y, Integer
+  property :width, Integer
+  property :height, Integer
   
   belongs_to :user
 end

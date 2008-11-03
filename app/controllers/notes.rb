@@ -2,7 +2,12 @@ class Notes < Application
   provides :xml, :yaml, :json
 
   def index
-    @note = Note.all
+    if !(session.user.nil? && cookies[:user_id].nil?)
+      @user_id = cookies[:user_id] || session.user.id
+      @note = Note.all :user_id => @user_id
+    else
+      @note = []
+    end
     display @note
   end
 
@@ -41,11 +46,10 @@ class Notes < Application
     @note = Note.new(note)
     if @note.save
       @status = 'success'
-      case content_type
-        when :html
-          redirect resource(@note), :message => {:notice => "Note was successfully created"}
-        else
-          display @note
+      if request.ajax?
+        display @note
+      else
+        redirect resource(@note), :message => {:notice => "Note was successfully created"}
       end
     else
       message[:error] = "Note failed to be created"
@@ -57,9 +61,25 @@ class Notes < Application
     @note = Note.get(id)
     raise NotFound unless @note
     if @note.update_attributes(note)
-       redirect resource(@note)
+      @status = 'success'
+      @status = 'you said error' if @note.body =~ /error/ # for testing
+      if request.ajax?
+        display @note, :create
+      else
+        redirect resource(@note)
+      end
     else
-      display @note, :edit
+      if @note.errors.length == 0
+        @status = 'success'
+      else
+        @status = 'failure'
+      end
+      if request.ajax?
+        display @note, :create
+      else
+        display @note, :edit        
+      end
+
     end
   end
 
@@ -67,7 +87,12 @@ class Notes < Application
     @note = Note.get(id)
     raise NotFound unless @note
     if @note.destroy
-      redirect resource(:note)
+      @status = 'success'
+      if request.ajax?
+        render :delete
+      else
+        redirect resource(:note)
+      end
     else
       raise InternalServerError
     end

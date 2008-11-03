@@ -1,4 +1,15 @@
-<h1>Note controller, index action</h1>
-
-<p>Edit this file in <tt>app/views/note/index.html.erb</tt></p>
-<p>For more information and examples of CRUD views read <a href="http://wiki.merbivore.com/howto/crud_view_example_with_merb_using_erb"> this wiki page</a>
+<div id="notes">
+  <script type="text/javascript">
+    // notes for user <%= @user_id %>
+    var notes = [];
+    <% unless @note.nil? %>
+      <% @note.each_index do |i| %>
+      
+      notes[<%= i %>] = {id: <%= @note[i].id %>, body: <%= @note[i].body.to_json %>, position_x: <%= @note[i].position_x %>, position_y: <%= @note[i].position_y %>, width: <%= @note[i].width %>, height: <%= @note[i].height %>};
+      <% end %>
+    <% end %>
+  </script>
+</div>
+<div id="desktop"></div>
+<h1>Notepad</h1>
+<h2 id='click_to_start'>(click anywhere to get started)</h2>
