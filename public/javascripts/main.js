@@ -68,6 +68,7 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
         close_link.show();
         hide_link.show();
         textarea.show();
+        note.resizable("enable");
         //textarea.attr("disabled", "");
       });
     }
