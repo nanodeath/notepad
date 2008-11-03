@@ -117,7 +117,7 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
 
 function update_note(note, id){
   note.addClass("unsaved");
-  $('#note_status', note).text('*');
+  $('#note_status', note).text(' -- Saving');
   if(parseInt(note.css('top')) < 0) note.css('top', "0px");
           
   $.post('/notes/' + id + '.json', {
