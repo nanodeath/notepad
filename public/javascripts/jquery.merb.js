@@ -1,3 +1,18 @@
+/**
+ * Merb plugin
+ *
+ * Copyright (c) 2008 Max Aller (nanodeath@gmail.com)
+ * Dual licensed under the MIT and GPL licenses:
+ * http://www.opensource.org/licenses/mit-license.php
+ * http://www.gnu.org/licenses/gpl.html
+ *
+ * Version: 0.1
+ * 
+ * Requirements:
+ *  jQuery: 1.2+
+ *  Merb: 1.0+
+ */
+
 /* Example usage
  * create: $.merb.resource.create({resource: 'note', resources: 'notes', dataType: 'json', properties: {body: 'moo'}})
  * read (index): $.merb.resource.read({resources: 'notes'})
