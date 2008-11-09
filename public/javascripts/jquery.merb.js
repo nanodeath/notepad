@@ -1,3 +1,23 @@
+/* Example usage
+ * create: $.merb.resource.create({resource: 'note', resources: 'notes', dataType: 'json', properties: {body: 'moo'}})
+ * read (index): $.merb.resource.read({resources: 'notes'})
+ * read (one): $.merb.resource.read({resources: 'notes', id: 5, dataType: 'json'})
+ * update: $.merb.resource.update({resource: 'note', resources: 'notes', id: 6, dataType: 'json', properties: {position_x: '200'}})
+ * delete: $.merb.resource.delete({resources: 'notes', id: 6, dataType: 'xml'})
+ * 
+ * N.B.: create/update need singular and plural, read and delete only need plural
+ * 
+ * if you register first...like this:
+ *  $.merb.resource.register('note', 'notes');
+ *   (or $.merb.resource.register('note', 'notes', '/path/to/');)
+ * instead of this:
+ *  $.merb.resource.create({resource: 'note', resources: 'notes', path: '/path/to/', properties: {body: 'moo'}})
+ * you can say this:
+ *  $.merb.resource.create({resource: 'note', properties: {body: 'moo'}})
+ * or even this:
+ *  $.merb.resource.create({resources: 'notes', properties: {body: 'moo'}})
+ */
+
 (function($){
   var registered_resource_types = {};
   
