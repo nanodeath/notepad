@@ -43,12 +43,24 @@
         return ret;
       },
       // Return the resource options stored with $.merb.resource.register for a given resource
+      // Can be used to retrieve the singular and plural forms of a resource, as well as the
+      // path, given the singular form, plural form, or both.
       // Preconditions: resource is an object
       // Input: Resource object with .singular and/or .plural properties
+      // Output: Object with .singular, .plural, and .path set
       get_resource_options: function(resource){
         var ret = resource.singular && registered_resource_types[resource.singular] ||
                   resource.plural && registered_resource_types[resource.plural];
         return ret || {};
+      },
+      process_properties: function(resource, properties){
+        // Process properties (of the resource)
+        // Converts "body" to "post[body]", for instance
+        var ret = {};
+        for(var i in properties){
+          ret[resource.singular + '[' + i + ']'] = properties[i];
+        }
+        return ret;
       }
     }
   };
@@ -68,6 +80,27 @@
         registered_resource_types[plural_name] = options;
       },
 
+      // Creates a resource on the server
+      // You have two options for telling this method what resource you want to operate on
+      // Ad hoc:
+      //  Set the resource and resources property on the options object each time you
+      //  perform a query with that resource.  If your resource path isn't off /, you'll
+      //  need to set that, too.
+      // Register:
+      //  Call $.merb.resource.register with your resource, then when you want to call this
+      //  method, you only need to specify resource (or resources) and the rest of the needed
+      //  information will be picked up.
+      // Other options:
+      //  dataType: set this to the type of data you want this to return
+      //   default: html
+      //   examples: json, html, yml, js, xml
+      //  path: the location of the resource on the server.  Trailing slash, please.
+      //   default: /
+      //   examples: / (for /posts), /admin/ (for /admin/user)
+      //  properties:
+      //   attributes of the resource you're creating.
+      //   default: none (required options)
+      //   examples: date, body, anonymous (for a news comment)
       create: function(options){
         options = $.extend({
           path: '/',
@@ -108,13 +141,7 @@
           options.dataType = null;
         }
         
-        // Process properties (of the resource)
-        // Converts "body" to "post[body]", for instance
-        var new_properties = {};
-        for(var i in options.properties){
-          new_properties[resource.singular + '[' + i + ']'] = options.properties[i];
-        }
-        options.properties = new_properties;
+        options.properties = merb.resource.process_properties(resource, options.properties);
         
         // Fairly standard fare here
         var ajax_options = $.extend({
@@ -126,6 +153,9 @@
         
         $.ajax(ajax_options);
       },
+      // Same as create, but with two differences in options
+      // No properties option (obviously)
+      // File separator (default '/') for server operating system
       read: function(options){
         // See create method for comments -- this method is basically the same
         options = $.extend({
@@ -169,11 +199,108 @@
         
         $.ajax(ajax_options);
       },
-      update: function(){
+      update: function(options){
+        // See create method for comments -- this method is basically the same
+        options = $.extend({
+          path: '/',
+          dataType: 'html',
+          properties: {},
+          separator: '/'
+        }, options || {});
+
+        var resource = {
+          singular: options.resource,
+          plural: options.resources,
+          path: options.path
+        };
         
+
+        if(!resource.singular || !resource.plural){
+          resource = merb.resource.get_resource_options(resource);
+        }
+        
+        if(!resource.singular){
+          throw "Can't determine singular resource (for property-setting)";
+        }
+        if(!resource.plural) {
+          throw "Can't determine plural resource (for url)";
+        }
+        
+        var url = resource.path + resource.plural;
+        
+        // Handled slightly differently because update requires an id
+        if(!options.id){
+          throw "An id is required to update a resource"
+        }
+        
+        url += options.separator + options.id;
+        
+        var det_ext = merb.resource.determine_extension(options.dataType);
+        url += det_ext.extension;
+        if (det_ext.clear_dataType) {
+          options.dataType = null;
+        }
+        
+        options.properties = merb.resource.process_properties(resource, options.properties);
+        
+        // for Merb/REST
+        options.properties['_method'] = 'put';
+        
+        var ajax_options = $.extend({
+          type: 'post',
+          url: url,
+          dataType: options.dataType,
+          data: options.properties
+        }, options.ajax || {});
+        
+        $.ajax(ajax_options);
       },
-      deleted: function(){
+      delete: function(options){
+        // See create method for comments -- this method is basically the same
+        options = $.extend({
+          path: '/',
+          dataType: 'html',
+          separator: '/'
+        }, options || {});
+
+        var resource = {
+          singular: options.resource,
+          plural: options.resources,
+          path: options.path
+        };
         
+        if(!resource.plural){
+          resource = merb.resource.get_resource_options(resource);
+        }
+        
+        if(!resource.plural) {
+          throw "Can't determine plural resource (for url)";
+        }
+        
+        var url = resource.path + resource.plural;
+        
+        if(!options.id){
+          throw "An id is required to delete a resource"
+        }
+        
+        url += options.separator + options.id;
+        
+        var det_ext = merb.resource.determine_extension(options.dataType);
+        url += det_ext.extension;
+        if (det_ext.clear_dataType) {
+          options.dataType = null;
+        }
+
+        options.properties = { '_method': 'delete' };
+        
+        var ajax_options = $.extend({
+          type: 'post',
+          url: url,
+          dataType: options.dataType,
+          data: options.properties
+        }, options.ajax || {});
+        
+        $.ajax(ajax_options);
       }
     }
   }
