@@ -1,3 +1,5 @@
+(function(){
+
 var default_settings = {
   note: {
     width: 400,
@@ -5,18 +7,28 @@ var default_settings = {
   }
 };
 
-function addNote(position_x, position_y, width, height, title, body, id, animation){
+// options are width, height, title, body, animation, id
+function addNote(position_x, position_y, options/*, width, height, title, body, id, animation*/){
+  options = $.extend({
+    title: 'Note',
+    body: '',
+    animation: 'slide',
+    width: default_settings.note.width,
+    height: default_settings.note.height
+  }, options || {});
+  /*
   title = title || 'Note';
   body = body || '';
   animation = animation || 'slide';
   width = width || default_settings.note.width;
   height = height || default_settings.note.height;
+  */
 
   var note = $("<div class='note ui-draggable ui-dialog'></div>");
   note.appendTo("#notes");
-  note.css({left: position_x, top: position_y, width: width, height: height});
-  note.show(animation, {}, 1000, function(){
-    if (id === undefined) {
+  note.css({left: position_x, top: position_y, width: options.width, height: options.height});
+  note.show(options.animation, {}, 1000, function(){
+    if (options.id === undefined) {
       $.post('/notes.json', {
         'note[user_id]': '',
         'note[body]': '',
@@ -27,7 +39,7 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
       }, function(data){
         if (data.status == 'success') {
           console.log("Note " + data.note_id + " created successfully");
-          id = data.note_id;
+          options.id = data.note_id;
         }
         else {
           console.log("Note not created successfully");
@@ -37,11 +49,11 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
     }
   });
 
-  var handle = $("<div class='note_handle ui-dialog-titlebar'><span class='note_handle_left'>" + title + " <span id='note_status'></span></span>&nbsp;</div>");
+  var handle = $("<div class='note_handle ui-dialog-titlebar'><span class='note_handle_left'>" + options.title + " <span id='note_status'></span></span>&nbsp;</div>");
   
   var close_link = $("<a href='javascript:void(0);'>X</a>").click(function(){
       note.remove();
-      $.post('/notes/' + id + '.json', {'_method': 'delete'}, function(data){
+      $.post('/notes/' + options.id + '.json', {'_method': 'delete'}, function(data){
         if(data.status == 'success'){
           console.log("Note destroyed successfully");
         } else {
@@ -76,9 +88,9 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
   
   handle.appendTo(note);
   $("<span class='note_handle_right'></span>").append(hide_link).append(close_link).prependTo(handle);
-  var textarea = $("<textarea>" + body + "</textarea>").appendTo(note);
+  var textarea = $("<textarea>" + options.body + "</textarea>").appendTo(note);
 
-  textarea.css({width: width - 6, height: height - 55});
+  textarea.css({width: options.width - 6, height: options.height - 55});
 
   textarea.keypress(function(){
       if(textarea.data('ajax_timer')) clearTimeout(textarea.data('ajax_timer'));
@@ -91,7 +103,7 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
           var new_data = textarea.val();
           if(old_data != new_data){
               textarea.data('old_data', new_data);
-              update_note(note, id);
+              update_note(note, options.id);
           }
       }, 5000);
       textarea.data('ajax_timer', delayed_action);
@@ -104,13 +116,13 @@ function addNote(position_x, position_y, width, height, title, body, id, animati
       $("textarea", note).css({height: parseInt(note.css("height")) - 55});
     },
     stop: function(){
-      update_note(note, id);
+      update_note(note, options.id);
     }
   });
   note.draggable({
     handle: handle,
     stop: function(){
-      update_note(note, id);
+      update_note(note, options.id);
     }
   });
 }
@@ -152,6 +164,15 @@ $(function(){
     });
     
     for(var i = notes.length - 1; i >= 0; i--){
-      addNote(notes[i].position_x, notes[i].position_y, notes[i].width, notes[i].height, "Note", notes[i].body, notes[i].id, 'show');
+      addNote(notes[i].position_x, notes[i].position_y, {
+        width: notes[i].width,
+        height: notes[i].height,
+        title: "Note",
+        body: notes[i].body,
+        id: notes[i].id,
+        animation: 'show'
+      });
     }
 });
+
+})();

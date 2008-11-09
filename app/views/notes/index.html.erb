@@ -5,7 +5,7 @@
     <% unless @note.nil? %>
       <% @note.each_index do |i| %>
       
-      notes[<%= i %>] = {id: <%= @note[i].id %>, body: <%= @note[i].body.to_json %>, position_x: <%= @note[i].position_x %>, position_y: <%= @note[i].position_y %>, width: <%= @note[i].width %>, height: <%= @note[i].height %>};
+      notes[<%= i %>] = {id: <%= @note[i].id %>, body: <%= @note[i].body.to_json %>, position_x: <%= @note[i].position_x || 50 %>, position_y: <%= @note[i].position_y || 50 %>, width: <%= @note[i].width || 50 %>, height: <%= @note[i].height || 50 %>};
       <% end %>
     <% end %>
   </script>
